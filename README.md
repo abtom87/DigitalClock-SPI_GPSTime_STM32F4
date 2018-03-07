@@ -11,8 +11,11 @@ The Serial Seven Segment Display is connected to the SPI lines of the STM32F4 bo
 SPI2 is configured and used in this project. 
 
 Master      _  Slave
+
 PB12(NSS)  -->  /CS
+
 PB13(SCK)  -->  CLK
+
 PB15(MOSI) -->  DIN
 
 
