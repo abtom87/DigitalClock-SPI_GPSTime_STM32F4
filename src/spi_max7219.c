@@ -9,7 +9,7 @@
 void init_MAX7219_powerup()
 {
 	write_to_MAX7219(MAX7219_ADDR_DECODE_MODE, 0xFF);
-	write_to_MAX7219(MAX7219_ADDR_INTENSITY, 0x0F);
+	write_to_MAX7219(MAX7219_ADDR_INTENSITY, 0x0A);
 	write_to_MAX7219(MAX7219_ADDR_SCAN_LIM, 0x07);
 	write_to_MAX7219(MAX7219_ADDR_SHUTDOWN, 0x01);
 	write_to_MAX7219(MAX7219_ADDR_DISP_TEST, 0x00);
@@ -22,6 +22,7 @@ void init_MAX7219_powerup()
 	write_to_MAX7219(MAX7219_ADDR_DIG_5, 0x00);
 	write_to_MAX7219(MAX7219_ADDR_DIG_6, 0x00);
 	write_to_MAX7219(MAX7219_ADDR_DIG_7, 0x00);
+	clearDisplay_MAX7219();
 }
 
 void write_to_MAX7219(uint8_t addr, uint8_t data)
@@ -50,14 +51,14 @@ void clearDisplay_MAX7219()
 }
 void Display_longNum_MAX7219(volatile long number)
 {
-
-	clearDisplay_MAX7219();
-
 	uint8_t i = 1;
 
 	while (number)
 	{
-		write_to_MAX7219(i, (uint8_t) (number % 10));
+		if(i==3 || i==5)
+			write_to_MAX7219(i, 0x80+(uint8_t) (number % 10));
+		else
+			write_to_MAX7219(i, (uint8_t) (number % 10));
 		number /= 10;
 		i++;
 	}
@@ -92,6 +93,9 @@ void Display_Time_MAX7219(char *str_to_parse, char *str_to_extract,
 		Time_buffer[1] += 1;
 
 	time_to_disp = strtol(Time_buffer, (char **) NULL, 10);
+
+	if(time_to_disp>235959)
+		clearDisplay_MAX7219();
 
 	Display_longNum_MAX7219(time_to_disp);
 }
